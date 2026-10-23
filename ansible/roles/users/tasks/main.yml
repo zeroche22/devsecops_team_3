@@ -1,0 +1,36 @@
+---
+- name: Ensure sudo group exists
+  group:
+    name: sudo
+    state: present
+
+- name: Create dev user
+  user:
+    name: dev
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    state: present
+
+- name: Create devops user
+  user:
+    name: devops
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    state: present
+
+- name: Configure sudoers for dev and devops
+  copy:
+    dest: /etc/sudoers.d/devsecops-users
+    content: |
+      dev ALL=(ALL) NOPASSWD:ALL
+      devops ALL=(ALL) NOPASSWD:ALL
+    mode: '0440'
+    validate: 'visudo -cf %s'
+
+- name: Add authorized SSH key for dev
+  authorized_key:
+    user: dev
+    state: present
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeuPOLsjjs2uLmyAomDlU4DRXdxyiT6yifwmNGoSrhT study3-devsecops"
