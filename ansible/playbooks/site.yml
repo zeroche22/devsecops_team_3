@@ -1,0 +1,9 @@
+---
+- name: Setup and Configure Study3-k8s-setup Host
+  hosts: k8s_nodes
+  become: yes
+  roles:
+    - common
+    - security
+    - docker
+    - webapp

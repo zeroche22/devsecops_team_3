@@ -1,0 +1,18 @@
+# vSphere Connection Settings
+vsphere_server   = "192.168.5.101"
+vsphere_user     = "Study3-devops@vsphere.local"
+vsphere_password = "your-password-here"
+
+# Target Infrastructure
+vsphere_datacenter = "Datacenter"
+vsphere_datastore  = "Toshiba_2TB"
+vsphere_host       = "192.168.5.100"
+vsphere_network    = "VM Network"
+template_name      = "ubuntu_24.04.3"
+
+# VM Configuration (Limits: max 2 vCPU, max 2048 MB RAM)
+vm_name   = "Study3-k8s-setup"
+vm_folder = "Students-VMs"
+vm_cpus   = 1
+vm_memory = 1024
+vm_ip     = "192.168.5.203"
