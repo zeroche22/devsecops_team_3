@@ -1,14 +1,10 @@
-output "vm_name" {
-  description = "Deployed VM Name"
-  value       = vsphere_virtual_machine.vm.name
-}
-
-output "vm_ip" {
-  description = "Assigned static IP address"
-  value       = var.vm_ip
-}
-
-output "vm_id" {
-  description = "VM vSphere ID"
-  value       = vsphere_virtual_machine.vm.id
+output "virtual_machines" {
+  description = "Параметри розгорнутих віртуальних машин (ім'я, IP, ID)"
+  value = {
+    for k, vm in vsphere_virtual_machine.vm : k => {
+      name = vm.name
+      ip   = vm.default_ip_address != null ? vm.default_ip_address : var.vms[k].ip
+      id   = vm.id
+    }
+  }
 }
