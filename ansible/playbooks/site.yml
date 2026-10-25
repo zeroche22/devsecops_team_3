@@ -1,10 +1,41 @@
 ---
-- name: Setup and Configure Study3-k8s-setup Host
-  hosts: k8s_nodes
+# 0. Початкова ініціалізація: створення користувачів devops та dev на чистих машинах
+- name: Початкова ініціалізація користувачів devops та dev
+  hosts: all
+  become: yes
+  vars:
+    ansible_user: student
+    ansible_ssh_pass: student
+    ansible_become_pass: student
+  roles:
+    - users
+
+# 1. Базова конфігурація та налаштування безпеки для всіх хостів
+- name: Застосування базових налаштувань та посилення безпеки
+  hosts: all
   become: yes
   roles:
     - common
-    - users
     - security
+
+# 2. Налаштування вузла керування та автоматизації (Study3-setup)
+- name: Налаштування вузла керування Study3-setup
+  hosts: control_nodes
+  become: yes
+  roles:
     - docker
-    - webapp
+
+# 3. Налаштування вузла Kubernetes / Minikube
+- name: Налаштування вузла Study3-minikube
+  hosts: k8s_nodes
+  become: yes
+  roles:
+    - docker
+    - minikube
+
+# 4. Налаштування вузла моніторингу та збору метрик/логів
+- name: Налаштування вузла спостережуваності Study3-observability
+  hosts: monitoring_nodes
+  become: yes
+  roles:
+    - docker

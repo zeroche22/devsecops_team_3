@@ -1,7 +1,7 @@
 ---
-# Shift-Left Security Hardening Baseline
+# Базовий рівень безпеки Shift-Left (Hardening Baseline)
 
-- name: Install security tools
+- name: Встановлення інструментів безпеки (ufw, fail2ban, unattended-upgrades)
   apt:
     name:
       - ufw
@@ -9,7 +9,7 @@
       - unattended-upgrades
     state: present
 
-- name: Configure sysctl network security hardening
+- name: Налаштування параметрів безпеки мережі через sysctl
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -22,13 +22,13 @@
     - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
     - { name: 'net.ipv4.conf.default.send_redirects', value: '0' }
 
-- name: Enable fail2ban service
+- name: Увімкнення та запуск служби fail2ban
   service:
     name: fail2ban
     state: started
     enabled: yes
 
-- name: Configure UFW default policies
+- name: Налаштування політик UFW за замовчуванням
   ufw:
     direction: "{{ item.direction }}"
     policy: "{{ item.policy }}"
@@ -36,18 +36,23 @@
     - { direction: 'incoming', policy: 'deny' }
     - { direction: 'outgoing', policy: 'allow' }
 
-- name: Allow SSH on UFW
+- name: Дозвіл підключення по SSH у UFW
   ufw:
     rule: allow
     port: '22'
     proto: tcp
 
-- name: Allow HTTP / Web application port on UFW
+- name: Дозвіл трафіку для веб-додатку (HTTP) у UFW
   ufw:
     rule: allow
     port: '80'
     proto: tcp
 
-- name: Enable UFW firewall
+- name: Дозвіл внутрішнього трафіку підмережі 192.168.5.0/24 у UFW
+  ufw:
+    rule: allow
+    src: '192.168.5.0/24'
+
+- name: Активація фаєрволу UFW
   ufw:
     state: enabled

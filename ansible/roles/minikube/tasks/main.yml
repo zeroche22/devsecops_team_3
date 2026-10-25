@@ -1,0 +1,27 @@
+---
+- name: Встановлення системних залежностей для Minikube (conntrack, socat, iptables)
+  apt:
+    name:
+      - conntrack
+      - socat
+      - iptables
+    state: present
+    update_cache: yes
+
+- name: Завантаження бінарного файлу kubectl
+  get_url:
+    url: "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: '0755'
+
+- name: Завантаження бінарного файлу Minikube
+  get_url:
+    url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+    dest: /usr/local/bin/minikube
+    mode: '0755'
+
+- name: Додавання користувача до групи docker
+  user:
+    name: "{{ ansible_user | default('devops') }}"
+    groups: docker
+    append: yes

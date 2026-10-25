@@ -1,10 +1,10 @@
 ---
-- name: Ensure sudo group exists
+- name: Перевірка наявності групи sudo
   group:
     name: sudo
     state: present
 
-- name: Create devops user
+- name: Створення користувача devops
   user:
     name: devops
     shell: /bin/bash
@@ -12,7 +12,7 @@
     append: yes
     state: present
 
-- name: Create dev user
+- name: Створення користувача dev
   user:
     name: dev
     shell: /bin/bash
@@ -20,7 +20,7 @@
     append: yes
     state: present
 
-- name: Configure sudoers for devops and dev
+- name: Налаштування привілеїв sudoers для devops та dev
   copy:
     dest: /etc/sudoers.d/devsecops-users
     content: |
@@ -29,8 +29,17 @@
     mode: '0440'
     validate: 'visudo -cf %s'
 
-- name: Add authorized SSH key for devops
+- name: Додавання авторизованого SSH-ключа для dev
+  authorized_key:
+    user: dev
+    state: present
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeuPOLsjjs2uLmyAomDlU4DRXdxyiT6yifwmNGoSrhT study3-devsecops"
+
+- name: Додавання авторизованих SSH-ключів для devops
   authorized_key:
     user: devops
     state: present
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeuPOLsjjs2uLmyAomDlU4DRXdxyiT6yifwmNGoSrhT study3-devsecops"
+    key: "{{ item }}"
+  loop:
+    - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC9zCnHzYKXW4gpoW3/ud/MyBxpH9oFzWMCoBD9ksW/G"
+    - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeuPOLsjjs2uLmyAomDlU4DRXdxyiT6yifwmNGoSrhT study3-devsecops"
