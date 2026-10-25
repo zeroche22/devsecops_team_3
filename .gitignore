@@ -29,6 +29,7 @@ override.tf.json
 ansible/.vault_password
 
 # Archives & Temporary files
+.idea/
 *.zip
 *.tar.gz
 *:Zone.Identifier
