@@ -22,10 +22,20 @@
     - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
     - { name: 'net.ipv4.conf.default.send_redirects', value: '0' }
 
+- name: Налаштування списку виключень fail2ban (білий список підмереж)
+  copy:
+    dest: /etc/fail2ban/jail.local
+    content: |
+      [DEFAULT]
+      ignoreip = 127.0.0.1/8 ::1 192.168.5.0/24 192.168.10.0/24 192.168.5.1
+    mode: '0644'
+    owner: root
+    group: root
+
 - name: Увімкнення та запуск служби fail2ban
   service:
     name: fail2ban
-    state: started
+    state: restarted
     enabled: yes
 
 - name: Налаштування політик UFW за замовчуванням
@@ -56,3 +66,37 @@
 - name: Активація фаєрволу UFW
   ufw:
     state: enabled
+
+# Блокування парольного входу SSH та захист облікових записів
+- name: Блокування парольного входу для користувача student
+  user:
+    name: student
+    password_lock: yes
+  ignore_errors: yes
+
+- name: Видалення конфліктуючих налаштувань хмарної ініціалізації SSH
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/ssh/sshd_config.d/50-cloud-init.conf
+    - /etc/ssh/sshd_config.d/60-devsecops-hardening.conf
+
+- name: Налаштування заборони парольної автентифікації SSH (пріоритетний файл 01-devsecops)
+  copy:
+    dest: /etc/ssh/sshd_config.d/01-devsecops-hardening.conf
+    content: |
+      # Shift-Left Security Hardening: сувора заборона входу за паролем
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      ChallengeResponseAuthentication no
+      PermitRootLogin no
+      PubkeyAuthentication yes
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Перезапуск служби SSH для застосування конфігурації
+  service:
+    name: ssh
+    state: restarted
