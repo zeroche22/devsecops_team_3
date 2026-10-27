@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Авторизація</title>
+    <meta name="description" content="Лаконічна сторінка входу." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="auth-card" aria-label="Форма входу">
+      <form class="login-form" novalidate>
+        <div class="form-heading">
+          <p class="eyebrow">Вхід</p>
+          <h1>Увійдіть в акаунт</h1>
+        </div>
+
+        <label class="field">
+          <span>Електронна пошта</span>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Zm2.1-.75 5.9 4.58 5.9-4.58H6.1Zm12.15 2.31-6.09 4.73a1 1 0 0 1-1.12 0L5.75 8.31v9.44c0 .41.34.75.75.75h10.5c.41 0 .75-.34.75-.75V8.31Z"/>
+            </svg>
+            <input type="email" name="email" placeholder="name@example.com" autocomplete="email" />
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Пароль</span>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17 9V7A5 5 0 0 0 7 7v2H5.5A1.5 1.5 0 0 0 4 10.5v8A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 18.5 9H17Zm-8 0V7a3 3 0 1 1 6 0v2H9Zm2 6.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/>
+            </svg>
+            <input id="password" type="password" name="password" placeholder="Введіть пароль" autocomplete="current-password" />
+            <button class="toggle-password" type="button" aria-label="Показати пароль" aria-pressed="false">
+              <span>Показати</span>
+            </button>
+          </div>
+        </label>
+
+        <div class="meta-row">
+          <label class="remember-me">
+            <input type="checkbox" name="remember" />
+            <span>Запам'ятати мене</span>
+          </label>
+          <a href="#" aria-label="Відновити пароль">Забули пароль?</a>
+        </div>
+
+        <button class="primary-btn" type="submit">Увійти</button>
+      </form>
+    </main>
+
+    <div class="status-toast" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
