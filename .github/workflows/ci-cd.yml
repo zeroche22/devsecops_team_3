@@ -429,4 +429,4 @@ jobs:
           docker save study3-devsecops-web:latest | ssh -o StrictHostKeyChecking=no devops@192.168.5.104 "minikube image load -"
           scp -o StrictHostKeyChecking=no k8s/webapp.yaml devops@192.168.5.104:/tmp/webapp.yaml
           ssh -o StrictHostKeyChecking=no devops@192.168.5.104 "kubectl apply -f /tmp/webapp.yaml && kubectl rollout restart deployment/study3-webapp && kubectl rollout status deployment/study3-webapp --timeout=120s"
-          curl -fsS http://192.168.5.104:30080/healthz | grep -q "OK"
+          curl -fsS --retry 5 --retry-delay 2 --retry-connrefused http://192.168.5.104:30080/healthz | grep -q "OK"
