@@ -25,3 +25,32 @@
     name: "{{ ansible_user | default('devops') }}"
     groups: docker
     append: yes
+
+- name: Дозвіл порту NodePort 30080 у фаєрволі UFW
+  ufw:
+    rule: allow
+    port: '30080'
+    proto: tcp
+
+- name: Додавання SSH-ключа github-runner з вузла Study3-setup для деплою
+  authorized_key:
+    user: "{{ ansible_user | default('devops') }}"
+    state: present
+    key: "{{ hostvars['Study3-setup']['github_runner_pubkey'] }}"
+  when:
+    - "'Study3-setup' in hostvars"
+    - hostvars['Study3-setup']['github_runner_pubkey'] is defined
+
+- name: Перевірка статусу кластера Minikube
+  become: yes
+  become_user: "{{ ansible_user | default('devops') }}"
+  command: minikube status
+  register: minikube_status
+  failed_when: false
+  changed_when: false
+
+- name: Запуск кластера Minikube з пробросом порту 30080
+  become: yes
+  become_user: "{{ ansible_user | default('devops') }}"
+  command: minikube start --driver=docker --cpus=2 --memory=1800m --ports=30080:30080
+  when: minikube_status.rc != 0
