@@ -382,3 +382,50 @@ jobs:
             --generate-notes \
             release/sbom.cdx.json \
             release/grype.sarif
+
+  deploy:
+    name: Manual Approval & Deploy to Minikube
+    runs-on: [self-hosted, Linux, X64, study3-setup]
+    needs: [publish, sign, release]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: http://192.168.5.104:30080
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Log in to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Image Signature Before Deploy
+        env:
+          DIGEST: ${{ needs.publish.outputs.image_digest }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        run: |
+          cosign verify \
+            --certificate-identity "https://github.com/${WORKFLOW_REF}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${DIGEST}"
+
+      - name: Deploy Verified Image to Study3-minikube
+        env:
+          DIGEST: ${{ needs.publish.outputs.image_digest }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          docker pull "${DIGEST}"
+          docker tag "${DIGEST}" study3-devsecops-web:latest
+          docker save study3-devsecops-web:latest | ssh -o StrictHostKeyChecking=no devops@192.168.5.104 "minikube image load -"
+          scp -o StrictHostKeyChecking=no k8s/webapp.yaml devops@192.168.5.104:/tmp/webapp.yaml
+          ssh -o StrictHostKeyChecking=no devops@192.168.5.104 "kubectl apply -f /tmp/webapp.yaml && kubectl rollout restart deployment/study3-webapp && kubectl rollout status deployment/study3-webapp --timeout=120s"
+          curl -fsS http://192.168.5.104:30080/healthz | grep -q "OK"
