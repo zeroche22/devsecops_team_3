@@ -1,4 +1,7 @@
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine-slim
+
+USER 0:0
+RUN apk --no-cache upgrade
 
 COPY --chown=101:101 nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 index.html styles.css script.js /usr/share/nginx/html/
