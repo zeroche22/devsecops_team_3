@@ -24,6 +24,7 @@
   become: yes
   roles:
     - docker
+    - ci_runner
 
 # 3. Налаштування вузла Kubernetes / Minikube
 - name: Налаштування вузла Study3-minikube
