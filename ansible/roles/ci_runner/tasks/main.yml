@@ -1,4 +1,11 @@
 ---
+- name: Встановлення Ansible Core на вузлі керування
+  apt:
+    name:
+      - ansible-core
+    state: present
+    update_cache: yes
+
 - name: Створення непривілейованого користувача github-runner
   user:
     name: github-runner
