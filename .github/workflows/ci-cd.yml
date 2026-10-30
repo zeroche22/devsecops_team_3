@@ -78,6 +78,7 @@ jobs:
 
       - name: Smoke Test Hardened Container (Non-Root & Security Headers)
         run: |
+          docker load -i /tmp/image.tar
           docker run -d --rm --read-only \
             --tmpfs /tmp:rw,noexec,nosuid \
             --tmpfs /var/cache/nginx:rw,noexec,nosuid \
