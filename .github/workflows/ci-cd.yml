@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Hadolint Dockerfile Scan
-        uses: hadolint/hadolint-action@f91fa57fc1ae9c1a051d6c6b31a5fc6a2b9a57f9
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf
         with:
           dockerfile: ./app/Dockerfile
           failure-threshold: warning
