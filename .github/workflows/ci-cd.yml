@@ -35,7 +35,7 @@ jobs:
           failure-threshold: warning
 
       - name: Trivy IaC, Secret & Misconfiguration Gate
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -126,7 +126,7 @@ jobs:
           path: /tmp
 
       - name: Run Trivy Security Gate
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
           input: /tmp/image.tar
           format: 'table'
@@ -137,7 +137,7 @@ jobs:
 
       - name: Generate Trivy SARIF report
         if: always()
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
           input: /tmp/image.tar
           format: 'sarif'
@@ -196,7 +196,7 @@ jobs:
           path: .
 
       - name: Scan SBOM with Trivy
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
           scan-type: 'sbom'
           scan-ref: 'sbom.cdx.json'
