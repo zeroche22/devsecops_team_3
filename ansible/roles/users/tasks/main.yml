@@ -1,27 +1,27 @@
 ---
 - name: Перевірка наявності групи sudo
-  group:
+  ansible.builtin.group:
     name: sudo
     state: present
 
 - name: Створення користувача devops
-  user:
+  ansible.builtin.user:
     name: devops
     shell: /bin/bash
     groups: sudo
-    append: yes
+    append: true
     state: present
 
 - name: Створення користувача dev
-  user:
+  ansible.builtin.user:
     name: dev
     shell: /bin/bash
     groups: sudo
-    append: yes
+    append: true
     state: present
 
 - name: Налаштування привілеїв sudoers для devops та dev
-  copy:
+  ansible.builtin.copy:
     dest: /etc/sudoers.d/devsecops-users
     content: |
       devops ALL=(ALL) NOPASSWD:ALL
@@ -30,13 +30,13 @@
     validate: 'visudo -cf %s'
 
 - name: Додавання авторизованого SSH-ключа для dev
-  authorized_key:
+  ansible.posix.authorized_key:
     user: dev
     state: present
     key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeuPOLsjjs2uLmyAomDlU4DRXdxyiT6yifwmNGoSrhT study3-devsecops"
 
 - name: Додавання авторизованих SSH-ключів для devops
-  authorized_key:
+  ansible.posix.authorized_key:
     user: devops
     state: present
     key: "{{ item }}"

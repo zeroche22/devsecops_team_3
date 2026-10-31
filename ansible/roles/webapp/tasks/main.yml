@@ -1,13 +1,13 @@
 ---
 - name: Create app directory on host
-  file:
+  ansible.builtin.file:
     path: /opt/webapp
     state: directory
     mode: '0755'
     owner: "{{ ansible_user | default('ubuntu') }}"
 
 - name: Copy web application source and Dockerfile
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../../app/"
     dest: /opt/webapp/
     owner: "{{ ansible_user | default('ubuntu') }}"

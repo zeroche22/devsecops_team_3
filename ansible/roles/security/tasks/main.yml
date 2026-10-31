@@ -1,8 +1,6 @@
 ---
-# Базовий рівень безпеки Shift-Left (Hardening Baseline)
-
 - name: Встановлення інструментів безпеки (ufw, fail2ban, unattended-upgrades)
-  apt:
+  ansible.builtin.apt:
     name:
       - ufw
       - fail2ban
@@ -10,11 +8,11 @@
     state: present
 
 - name: Налаштування параметрів безпеки мережі через sysctl
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-    reload: yes
+    reload: true
   loop:
     - { name: 'net.ipv4.tcp_syncookies', value: '1' }
     - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
@@ -23,7 +21,7 @@
     - { name: 'net.ipv4.conf.default.send_redirects', value: '0' }
 
 - name: Налаштування списку виключень fail2ban (білий список підмереж)
-  copy:
+  ansible.builtin.copy:
     dest: /etc/fail2ban/jail.local
     content: |
       [DEFAULT]
@@ -33,13 +31,13 @@
     group: root
 
 - name: Увімкнення та запуск служби fail2ban
-  service:
+  ansible.builtin.service:
     name: fail2ban
     state: restarted
-    enabled: yes
+    enabled: true
 
 - name: Налаштування політик UFW за замовчуванням
-  ufw:
+  community.general.ufw:
     direction: "{{ item.direction }}"
     policy: "{{ item.policy }}"
   loop:
@@ -47,35 +45,34 @@
     - { direction: 'outgoing', policy: 'allow' }
 
 - name: Дозвіл підключення по SSH у UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: '22'
     proto: tcp
 
 - name: Дозвіл трафіку для веб-додатку (HTTP) у UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: '80'
     proto: tcp
 
 - name: Дозвіл внутрішнього трафіку підмережі 192.168.5.0/24 у UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     src: '192.168.5.0/24'
 
 - name: Активація фаєрволу UFW
-  ufw:
+  community.general.ufw:
     state: enabled
 
-# Блокування парольного входу SSH та захист облікових записів
 - name: Блокування парольного входу для користувача student
-  user:
+  ansible.builtin.user:
     name: student
-    password_lock: yes
-  ignore_errors: yes
+    password_lock: true
+  ignore_errors: true
 
 - name: Видалення конфліктуючих налаштувань хмарної ініціалізації SSH
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
@@ -83,10 +80,9 @@
     - /etc/ssh/sshd_config.d/60-devsecops-hardening.conf
 
 - name: Налаштування заборони парольної автентифікації SSH (пріоритетний файл 01-devsecops)
-  copy:
+  ansible.builtin.copy:
     dest: /etc/ssh/sshd_config.d/01-devsecops-hardening.conf
     content: |
-      # Shift-Left Security Hardening: сувора заборона входу за паролем
       PasswordAuthentication no
       KbdInteractiveAuthentication no
       ChallengeResponseAuthentication no
@@ -97,6 +93,6 @@
     group: root
 
 - name: Перезапуск служби SSH для застосування конфігурації
-  service:
+  ansible.builtin.service:
     name: ssh
     state: restarted
