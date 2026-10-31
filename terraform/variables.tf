@@ -60,14 +60,14 @@ variable "vm_folder" {
 
 variable "vms" {
   type = map(object({
-    name      = string
-    ip        = string
-    cpus      = number
-    memory    = number
-    netmask   = number
-    gateway   = string
-    dns       = list(string)
-    domain    = string
+    name    = string
+    ip      = string
+    cpus    = number
+    memory  = number
+    netmask = number
+    gateway = string
+    dns     = list(string)
+    domain  = string
   }))
   description = "Мапа конфігурацій віртуальних машин (Виділений пул: 192.168.5.102 - 192.168.5.199)"
   default = {
