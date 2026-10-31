@@ -26,7 +26,52 @@
   - `playbooks/bootstrap.yml` — Первинна ініціалізація користувачів `devops` і `dev` через обліковий запис `student`.
   - `playbooks/site.yml` — Основний плейбук налаштування хостів, безпеки та Minikube.
   - `roles/` — Модульні ролі (`common`, `users`, `security`, `docker`, `minikube`, `webapp`).
+- `.pre-commit-config.yaml` — Конфігурація Shift-Left pre-commit хуків (`gitleaks`, `terraform fmt`, `terraform validate`, `tflint`, `ansible-lint`, `hadolint`).
+- `.ansible-lint` — Правила та виключення статичного аналізатора Ansible.
 - `.gitignore` — Захист від потрапляння конфіденційних даних (секретів, ключів WireGuard, tfstate).
+
+## Pre-commit Hooks (Shift-Left Security)
+
+Для автоматичної перевірки коду, маніфестів та відсутності секретів перед кожним комітом використовуються Git pre-commit хуки:
+- **Gitleaks** — сканування змін на наявність витоків секретів, паролів і ключів.
+- **Terraform (`fmt` / `validate`)** — перевірка форматування та синтаксичної валідності маніфестів у `terraform/`.
+- **TFLint** — статичний аналіз конфігурацій Terraform на помилки та невикористані оголошення.
+- **Ansible Lint** — перевірка плейбуків і ролей Ansible на відповідність стандартам (`production` profile, FQCN).
+- **Hadolint** — статичний аналіз `app/Dockerfile` на відповідність кращим практикам безпеки контейнерів.
+
+### 1. Встановлення необхідних інструментів
+
+#### macOS (Homebrew)
+```bash
+brew install pre-commit gitleaks tflint ansible-lint hadolint
+brew tap hashicorp/tap && brew install hashicorp/tap/terraform
+```
+
+#### Ubuntu / Debian
+```bash
+sudo apt update && sudo apt install -y python3-pip unzip curl
+pip3 install --user pre-commit ansible-lint
+```
+Для бінарних утиліт (`gitleaks`, `terraform`, `tflint`, `hadolint`) завантажте актуальні релізи у `/usr/local/bin`:
+```bash
+curl -sSfL https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | sudo bash
+sudo wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 && sudo chmod +x /usr/local/bin/hadolint
+```
+
+### 2. Встановлення колекцій Ansible для лінтера
+```bash
+ansible-galaxy collection install -r ansible/requirements.yml
+```
+
+### 3. Активація та запуск Pre-commit хуків
+Встановіть git-хук у локальний репозиторій:
+```bash
+pre-commit install
+```
+Після цього всі перевірки запускатимуться автоматично під час кожного `git commit`. Для ручного запуску перевірки всіх файлів репозиторію виконайте:
+```bash
+pre-commit run --all-files
+```
 
 ## Швидкий старт
 
